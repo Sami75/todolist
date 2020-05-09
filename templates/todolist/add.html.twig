@@ -9,16 +9,6 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>ToDo : </h1>
-    <button type="" class="btn btn-primary btn-block" onclick="addItem()">ADD ITEM</button>
-
-    {% for i in item %}
-        <li>
-            {{ i.getName }}
-            <ul>
-                {{ i.getContent }}
-            </ul>
-        </li>
-    {% endfor %}
+    {{ form(form) }}
 </div>
 {% endblock %}
