@@ -36,22 +36,21 @@ class ToDoListController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $send_email = $this->send_email($mailer);
-
+            
             $item = $form->getData();
             $item->setCreatedAt(new \DateTime());
             $item->setItemTodolist($todolist);
-                   
+            
             // $this->canAddItem($item);
             if ($itemRepository->canAddItem($item) instanceof Item) {
                 $manager->persist($item);
                 $manager->flush();
+                $send_email = $itemRepository->send_email($mailer, $this->getUser());
                 return $this->redirectToRoute('todolist');
             } else {
                 return $this->render('todolist/add.html.twig', [
                 'form' => $form->createView(),
                 'error' => "Vous avez atteint la limite d'ajout d'item dans votre liste ou patientez 30 minutes",
-                'send_email' => $send_email
             ]);
             }
         }
@@ -59,42 +58,6 @@ class ToDoListController extends AbstractController
         return $this->render('todolist/add.html.twig', [
             'form' => $form->createView(),
             'error' => "",
-            'send_email' => ""
         ]);
     }
-
-    public function send_email(\Swift_Mailer $mailer){
-
-        $user = $this->getUser();
-
-        // date aujourd'hui
-        $date = new \DateTime();
-        // date - 18 ans
-        $date_18 = $date->sub(new \DateInterval('P18Y'));
-        
-        if($user->getBirthday() >= $date_18)
-        {
-            
-            $message = (new \Swift_Message('Nouveau message'))
-            ->setFrom('sofianemiannay@gmail.com')
-            ->setTo('sofianemiannay@gmail.com')
-            ->setBody('Tu as ajouté une tâche !');
-
-            $mailer->send($message);
-
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-
-
-
-
-        // $mailer->send($message);
-    }
-
-
-    //todo addUserTodoList()
 }

@@ -64,4 +64,43 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ;
     }
     */
+
+    public function isValid($user) {
+        if($this->checkEmail($user) && $this->checkFirstName($user) && $this->checkLastName($user) && $this->checkLengthPwd($user) && $this->checkAge($user))
+            return true;
+        else return false;
+    }
+
+    public function checkEmail($user) {
+        if(preg_match('/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/', $user->getEmail())) return true;
+        else return false;
+    }
+
+    public function checkFirstName($user) {
+        if($user->getFirstName()) return true;
+        else return false;
+    }
+
+    public function checkLastName($user) {
+        if($user->getLastName()) return true;
+        else return false;
+    }
+
+    public function checkLengthPwd($user) {
+        if(strlen($user->getPassword()) >= 8 && strlen($user->getPassword()) <= 40) return true;
+        else return false;
+    }
+
+    public function checkAge($user) {
+        $birth = new \DateTime($user->getBirthday()->format("Y-m-d"));
+        $now = new \DateTime();
+
+        if($now->diff($birth)->y >= 13) return true;
+        else return false;
+    }
+
+    public function canAddTodoList($user) {
+        if(!$user->getUserTodolist() && $this->isValid($user)) return true;
+        else return false;
+    }
 }

@@ -50,13 +50,15 @@ class ItemRepository extends ServiceEntityRepository
 
     public function canAddItem($item)
     {
-        if($this->getNumberOfItems($item->getItemTodolist()->getId()) < 10 && $this->checkDateDiff())
+        if ($this->getNumberOfItems($item->getItemTodolist()->getId()) < 10 && $this->checkDateDiff()) {
             return $item;
-        else return null;
+        } else {
+            return null;
+        }
     }
 
-    public function getNumberOfItems($todolist_id) {
-
+    public function getNumberOfItems($todolist_id)
+    {
         $numberOfItems = $this->createQueryBuilder('item')
             ->select('count(item.id)')
             ->where('item.item_todolist = ' .$todolist_id)
@@ -66,7 +68,8 @@ class ItemRepository extends ServiceEntityRepository
         return $numberOfItems;
     }
 
-    public function checkDateDiff() {
+    public function checkDateDiff()
+    {
         $lastDate = $this->createQueryBuilder('item')
             ->select('MAX(item.createdAt)')
             ->getQuery()->getResult()[0][1];
@@ -74,5 +77,26 @@ class ItemRepository extends ServiceEntityRepository
         $seconds = abs(strtotime($lastDate) - (new \DateTime())->getTimestamp());
 
         return $seconds > 1800;
+    }
+
+    public function send_email(\Swift_Mailer $mailer, $user)
+    {
+        // date aujourd'hui
+        $date = new \DateTime();
+        // date - 18 ans
+        $date_18 = $date->sub(new \DateInterval('P18Y'));
+        
+        if ($user->getBirthday() >= $date_18) {
+            $message = (new \Swift_Message('Nouveau message'))
+            ->setFrom('sofianemiannay@gmail.com')
+            ->setTo('sofianemiannay@gmail.com')
+            ->setBody('Tu as ajouté une tâche !');
+
+            $mailer->send($message);
+
+            return true;
+        } else {
+            return false;
+        }
     }
 }
