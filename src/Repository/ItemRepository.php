@@ -47,4 +47,32 @@ class ItemRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function canAddItem($item)
+    {
+        if($this->getNumberOfItems($item->getItemTodolist()->getId()) < 10 && $this->checkDateDiff())
+            return $item;
+        else return null;
+    }
+
+    public function getNumberOfItems($todolist_id) {
+
+        $numberOfItems = $this->createQueryBuilder('item')
+            ->select('count(item.id)')
+            ->where('item.item_todolist = ' .$todolist_id)
+            ->getQuery()
+            ->getSingleScalarResult();
+            
+        return $numberOfItems;
+    }
+
+    public function checkDateDiff() {
+        $lastDate = $this->createQueryBuilder('item')
+            ->select('MAX(item.createdAt)')
+            ->getQuery()->getResult()[0][1];
+
+        $seconds = abs(strtotime($lastDate) - (new \DateTime())->getTimestamp());
+
+        return $seconds > 2;
+    }
 }

@@ -15,7 +15,6 @@ class ItemType extends AbstractType
         $builder
             ->add('name')
             ->add('content')
-            ->add('createdAt')
             ->add('save', SubmitType::class);
         ;
     }
