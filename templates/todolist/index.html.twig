@@ -10,7 +10,7 @@
 
 <div class="example-wrapper">
     <h1>ToDo : </h1>
-    <button type="" class="btn btn-primary btn-block" onclick="addItem()">ADD ITEM</button>
+    <button type="" class="btn btn-primary btn-block" onclick="window.location.href='{{ path('todolist-add')}}'">ADD ITEM</button>
 
     {% for i in item %}
         <li>

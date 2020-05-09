@@ -73,6 +73,6 @@ class ItemRepository extends ServiceEntityRepository
 
         $seconds = abs(strtotime($lastDate) - (new \DateTime())->getTimestamp());
 
-        return $seconds > 2;
+        return $seconds > 1800;
     }
 }
